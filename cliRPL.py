@@ -34,7 +34,7 @@ def usage():
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print usage()
+        print(usage())
         sys.exit(-1)
 
     context = zmq.Context()
@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
     try:
         cli_sock.send(sys.argv[1], zmq.DONTWAIT)
-    except zmq.ZMQError, err:
-        print "unable to communicate with the simpleRPL daemon: %s" % err
+    except zmq.ZMQError as err:
+        print("unable to communicate with the simpleRPL daemon: %s" % err)
         sys.exit(-1)
-    print cli_sock.recv()
+    print(cli_sock.recv())

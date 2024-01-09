@@ -76,6 +76,10 @@ class Header(object):
         self.build_compound_fields()
         return struct.pack(self._format, * self._header.values())
 
+    def pack(self):
+        self.build_compound_fields()
+        return struct.pack(self._format, * self._header.values())
+
     def __repr__(self):
         self.build_compound_fields()
         fields = "Field: \n" + \
@@ -853,7 +857,7 @@ class RPL_Option_Transit_Information(RPL_Option):
     """Transit Information option"""
     def __init__(self, E=0, flags=0, path_control=0,\
                  path_sequence=0, path_lifetime=0, \
-                 parent_address=""):
+                 parent_address=b""):
         super(RPL_Option_Transit_Information, self).__init__(mtype=RPL_OPT_Transit_Information)
         self._format += "BBBB0s"
         self._fields += ["Eflags", "path_control", "path_sequence", "path_lifetime", \
@@ -890,7 +894,7 @@ class RPL_Option_Transit_Information(RPL_Option):
     def __str__(self):
         self.build_compound_fields()
         self.length = len(self.parent_address) + 4
-        return super(RPL_Option_Transit_Information, self).__str__() + str(self.parent_address)
+        return super(RPL_Option_Transit_Information, self).__str__() + self.parent_address
 
     def parse(self, string):
         payload = super(RPL_Option_Transit_Information, self).parse(string)

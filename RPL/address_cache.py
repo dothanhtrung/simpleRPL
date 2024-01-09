@@ -19,7 +19,7 @@
 
 """Address Cache (store addresses assigned to interfaces)"""
 from Routing import Addressing
-from address import Address
+from RPL.address import Address
 
 class AddressCache(object):
     def __init__(self):

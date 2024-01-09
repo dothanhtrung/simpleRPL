@@ -21,12 +21,12 @@
 Neighbor Cache (store the preferred parent and the set of backup parents)
 """
 from threading import RLock
-import of_zero as of
-from address import Address
-from route_cache import Route
-import global_variables as gv
-from rpl_constants import INFINITE_RANK
-from lollipop import Lollipop
+import RPL.of_zero as of
+from RPL.address import Address
+from RPL.route_cache import Route
+import RPL.global_variables as gv
+from RPL.rpl_constants import INFINITE_RANK
+from RPL.lollipop import Lollipop
 
 
 import logging

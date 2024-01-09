@@ -22,8 +22,8 @@ Command line interfaces
 """
 
 import logging
-import global_variables as gv
-from address import Address
+import RPL.global_variables as gv
+from RPL.address import Address
 
 logger = logging.getLogger("RPL")
 

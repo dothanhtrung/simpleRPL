@@ -21,7 +21,7 @@
 Implementation of the Objective Function Zero (see RFC 6552)
 """
 
-from rpl_constants import INFINITE_RANK
+from RPL.rpl_constants import INFINITE_RANK
 
 # Objective Code Point
 OCP = 0

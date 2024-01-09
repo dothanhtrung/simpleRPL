@@ -21,7 +21,7 @@
 """Route cache"""
 from Routing import Routing
 from copy import copy
-import global_variables as gv
+import RPL.global_variables as gv
 
 import logging
 logger = logging.getLogger("RPL")

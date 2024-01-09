@@ -17,15 +17,15 @@
 # not limited to the correctness, accuracy, reliability or usefulness of
 # this software.
 
-from tools import list_valid_interfaces, broadcast
+from RPL.tools import list_valid_interfaces, broadcast
 from RplIcmp import RplSocket
-from cPickle import dumps, loads
+from pickle import dumps, loads
 from copy import deepcopy
-from message import Message
-from address import Address, derive_address
-from dodag import DODAG
-from route_cache import Route
-from icmp import ICMPv6, RPL_Header_map, DIS, DIO, \
+from RPL.message import Message
+from RPL.address import Address, derive_address
+from RPL.dodag import DODAG
+from RPL.route_cache import Route
+from RPL.icmp import ICMPv6, RPL_Header_map, DIS, DIO, \
                  DAO, DAO_ACK, \
                  RPL_Option_Solicited_Information, \
                  RPL_Option_DODAG_Configuration, \
@@ -34,12 +34,12 @@ from icmp import ICMPv6, RPL_Header_map, DIS, DIO, \
                  RPL_Option_RPL_Target, \
                  RPL_Option_Transit_Information, \
                  findOption, getAllOption
-from rpl_constants import INFINITE_RANK, \
+from RPL.rpl_constants import INFINITE_RANK, \
                           DEFAULT_INTERVAL_BETWEEN_DIS
 from threading import Timer
 from time import time
-import cli
-import global_variables as gv
+import RPL.cli
+import RPL.global_variables as gv
 import zmq
 import sys
 
@@ -113,7 +113,7 @@ def broadcast_dis(interfaces, options=""):
     logger.debug("checking if a DIS broadcast is required")
     if gv.dodag_cache.is_empty():
         logger.debug("broadcasting DIS")
-        broadcast(interfaces, str(DIS()) + str(options))
+        broadcast(interfaces, DIS().pack() + options.encode("latin-1"))
     else:
         logger.debug("no DIS is required")
     dis_timer = Timer(DEFAULT_INTERVAL_BETWEEN_DIS, broadcast_dis, kwargs= {'interfaces':interfaces})
@@ -550,7 +550,7 @@ def iface_listener(iface, RPL_socket):
         sender.send(dumps(m))
         del m
 
-    print "shutting down listener on %s" % iface
+    print("shutting down listener on %s" % iface)
     sys.exit(0)
 
 
@@ -575,7 +575,7 @@ def register_interfaces(iface_list):
 
     registered_iface = {}
     for iface in iface_list:
-        registered_iface[iface] = RplSocket(iface)
+        registered_iface[iface] = RplSocket(iface.encode("latin-1"))
 
     # we do not drop the privileges anymore, as it would prevent the Routing
     # module from working

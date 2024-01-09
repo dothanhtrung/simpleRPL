@@ -22,8 +22,8 @@ Defines a DODAG object that represent a single DODAG version.
 Also defines a DODAG cache that stores multiple DODAGs belonging to a same RPL instance.
 """
 
-from trickle import trickleTimer
-from rpl_constants import INFINITE_RANK, \
+from RPL.trickle import trickleTimer
+from RPL.rpl_constants import INFINITE_RANK, \
                           ROOT_RANK, \
                           DEFAULT_PATH_CONTROL_SIZE, \
                           DEFAULT_DIO_INTERVAL_MIN ,\
@@ -36,17 +36,17 @@ from rpl_constants import INFINITE_RANK, \
                           DEFAULT_DAO_MAX_TRANS_RETRY, \
                           DEFAULT_DAO_NO_PATH_TRANS
 
-from tools import broadcast, ALL_RPL_NODES
-from icmp import DAO, DAO_ACK, DIO, RPL_Option_DODAG_Configuration, RPL_Option_Prefix_Information, \
+from RPL.tools import broadcast, ALL_RPL_NODES
+from RPL.icmp import DAO, DAO_ACK, DIO, RPL_Option_DODAG_Configuration, RPL_Option_Prefix_Information, \
                  RPL_Option_Transit_Information, RPL_Option_RPL_Target
-import global_variables as gv
-from address import Address
-from lollipop import Lollipop
-from route_cache import Route
+import RPL.global_variables as gv
+from RPL.address import Address
+from RPL.lollipop import Lollipop
+from RPL.route_cache import Route
 
 from threading import RLock
 from functools import partial
-import of_zero as of
+import RPL.of_zero as of
 from math import floor
 import time
 import socket
@@ -122,7 +122,7 @@ class DODAG(object):
                 raise Exception("DODAG ID must be an address assigned to this node")
             if Address(dodagID).is_linklocal():
                 raise Exception("DODAG ID must be a routable address (not a link local address)")
-            self.dodagID = str(Address(dodagID))
+            self.dodagID = Address(dodagID).address
         else:
             self.rank = INFINITE_RANK
 
@@ -152,19 +152,19 @@ class DODAG(object):
         logger.info("sending DIO message for %s (version %d)" % (repr(Address(self.dodagID)), self.version.get_val()))
 
         if self.advertised_prefixes:
-            extra_option = "".join([str(RPL_Option_Prefix_Information(prefix_len=64, L=0, A=1, R=0,
+            extra_option = "".join([RPL_Option_Prefix_Information(prefix_len=64, L=0, A=1, R=0,
                                                                       prefix=prefix,
                                                                       valid_lifetime=0xFFFFFFFF, # infinite lifetime
-                                                                      preferred_lifetime=0xFFFFFFFF))
+                                                                      preferred_lifetime=0xFFFFFFFF).pack().decode("latin-1")
                                     for prefix in self.advertised_prefixes])
         else:
             extra_option = ""
 
-        DIO_message = str(DIO(instanceID=self.instanceID, version=self.version.get_val(),
+        DIO_message = DIO(instanceID=self.instanceID, version=self.version.get_val(),
                           rank=self.rank, G=self.G, MOP=self.MOP,
                           Prf=self.Prf, DTSN=self.DTSN.get_val(), flags=0, reserved=0,
-                          DODAGID=self.dodagID)) + \
-                      str(RPL_Option_DODAG_Configuration(A=self.authenticated,
+                          DODAGID=self.dodagID).pack() + \
+                      RPL_Option_DODAG_Configuration(A=self.authenticated,
                                                          PCS=self.PCS,
                                                          DIOIntDoubl=self.DIOIntDoublings,
                                                          DIOIntMin=self.DIOIntMin,
@@ -173,8 +173,8 @@ class DODAG(object):
                                                          MinHopRankIncrease=self.MinHopRankIncrease,
                                                          OCP=self.OCP,
                                                          DefLifetime=self.DftLft,
-                                                         LifetimeUnit=self.LftUnit)) +\
-                      extra_option
+                                                         LifetimeUnit=self.LftUnit).pack() +\
+                      extra_option.encode("latin-1")
 
         if iface and destination:
             self.interfaces[iface].send(destination, DIO_message)
@@ -217,10 +217,10 @@ class DODAG(object):
                                for (address, pref_len, nh_iface) in gv.address_cache])
 
         # the Parent Address field is not needed because the node is in Storing Mode
-        transit_inf_opt = str(RPL_Option_Transit_Information(path_control=0,
+        transit_inf_opt = RPL_Option_Transit_Information(path_control=0,
                                                              path_sequence=self.last_PathSequence.get_val(),
                                                              path_lifetime=0x00 if nopath else self.DftLft,
-                                                             parent_address=""))
+                                                             parent_address=b"")
 
         no_path_targets_opt = ""
         no_path_transit_inf_opt = ""
@@ -262,7 +262,7 @@ class DODAG(object):
                         no_path_transit_inf_opt = str(RPL_Option_Transit_Information(path_control=0,
                                                                                     path_sequence=self.last_PathSequence.get_val(),
                                                                                     path_lifetime=0x00,
-                                                                                    parent_address=""))
+                                                                                    parent_address=b""))
                 else:
                     self.no_path_routes = set()
         else:

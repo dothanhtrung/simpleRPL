@@ -85,7 +85,7 @@ def main(args):
 
     # start the listener for all interfaces
     listener_processes = []
-    for (iface, sock) in interfaces.iteritems():
+    for (iface, sock) in interfaces.items():
         pid = os.fork()
         if pid == 0:
             os.close(0)  # close stdin

@@ -34,6 +34,6 @@ def list_valid_interfaces():
 def broadcast(interfaces, msg):
     """Broadcast a message on all the registered interfaces"""
     for rpl_socket in interfaces.values():
-        rpl_socket.send(ALL_RPL_NODES, msg)
+        rpl_socket.send(ALL_RPL_NODES.encode("latin-1"), msg)
 
 

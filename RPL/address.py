@@ -21,7 +21,7 @@
 
 import socket
 from socket import AF_INET6
-import global_variables as gv
+import RPL.global_variables as gv
 
 # all-RPL-nodes multicast address (ff02::1a)
 ALL_RPL_NODES = '\xff\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x1a'
@@ -66,7 +66,7 @@ class Address(object):
     def is_linklocal(self):
         """Return True if the address is a link-local address (as defined per RFC 4291, Sec. 2.5.6),
         else return False"""
-        return self.address.startswith("\xfe\x80\x00\x00\x00\x00\x00\x00")  # address starts with fe80::/64
+        return self.address.startswith(b"\xfe\x80\x00\x00\x00\x00\x00\x00")  # address starts with fe80::/64
 
     def is_RPL_all_nodes(self):
         """Return True if the address is the All-RPL-Nodes multicast address"""
