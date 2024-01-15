@@ -103,7 +103,9 @@ def derive_address(interface, prefix):
     """Mimic the SLAAC to derive a valid IPv6 address from a given interface and prefix
     Here, the `interface` parameter is used to retrieve the Link-Layer address associated to the interface.
     """
-    lladdr = gv.link_cache.get_lladdr(interface)
+    if isinstance(interface, str):
+        interface = interface.encode("latin-1")
+    lladdr = gv.link_cache.get_lladdr(interface).decode("latin-1")
 
     if not lladdr:
         return None

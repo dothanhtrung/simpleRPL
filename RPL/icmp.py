@@ -104,6 +104,9 @@ class Header(object):
         if len(string) < self._header_size:
             raise Exception("string argument is to short to be parsed")
 
+        if isinstance(string, str):
+            string = string.encode("latin-1")
+
         unamed_fields = struct.unpack(self._format, string[:self._header_size])
         if len(unamed_fields) != len(self._fields):
             raise Exception("unpacked field data does not match, check your header definition")
@@ -1100,8 +1103,11 @@ def findOption(payload, opt_type, position=0):
     It indicates the option position (0 being the first time the option is met)"""
 
     # bottom case
-    if payload == "":
+    if payload == "" or payload == b"":
         return None
+
+    if isinstance(payload, bytes):
+        payload = payload.decode("latin-1")
 
     # Pad1 need special treatment
     if ord(payload[0]) == RPL_OPT_Pad1:
@@ -1130,8 +1136,11 @@ def findOption(payload, opt_type, position=0):
 
 def getAllOption(payload):
     """Decode all option of the payload and returns a list"""
-    if payload == "":
+    if payload == "" or payload == b"":
         return []
+
+    if isinstance(payload, bytes):
+        payload = payload.decode("latin-1")
 
     # Pad1 need special treatment
     if ord(payload[0]) == RPL_OPT_Pad1:
