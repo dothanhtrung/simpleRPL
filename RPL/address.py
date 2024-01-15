@@ -52,6 +52,8 @@ class Address(object):
             self.address = socket.inet_pton(AF_INET6, address)
         elif self.__is_network_address(address):
             self.address = address
+        elif self.__is_printable_address(address.decode('latin-1')):
+            self.address = socket.inet_pton(AF_INET6, address.decode('latin-1'))
         else:
             raise ValueError("Cannot parse address %s" % repr(address))
 
