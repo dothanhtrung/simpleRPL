@@ -50,10 +50,13 @@ def parse(cli_sock, command):
     """
     resp = "unrecognized command, try 'help'"
 
+    if isinstance(command, bytes):
+        command = command.decode("latin-1")
+
     logger.debug("processing command %s", command)
 
     if command == "help":
-        resp = "\n".join(["%s: %s" % (command, desc) for (command, desc) in COMMANDS.iteritems()])
+        resp = "\n".join(["%s: %s" % (command, desc) for (command, desc) in COMMANDS.items()])
     elif command == "show-current-dodag":
         dodag = gv.dodag_cache.get_active_dodag()
         if dodag:
@@ -117,4 +120,4 @@ def parse(cli_sock, command):
     else:
         logger.debug("command %s not recognized" % command)
 
-    cli_sock.send(resp)
+    cli_sock.send_string(resp)

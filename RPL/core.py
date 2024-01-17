@@ -38,7 +38,7 @@ from RPL.rpl_constants import INFINITE_RANK, \
                           DEFAULT_INTERVAL_BETWEEN_DIS
 from threading import Timer
 from time import time
-import RPL.cli
+import RPL.cli as cli
 import RPL.global_variables as gv
 import zmq
 import sys

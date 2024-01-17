@@ -42,8 +42,8 @@ if __name__ == '__main__':
     cli_sock.connect("ipc://RPL_CLI")
 
     try:
-        cli_sock.send(sys.argv[1], zmq.DONTWAIT)
+        cli_sock.send_string(sys.argv[1], zmq.DONTWAIT)
     except zmq.ZMQError as err:
         print("unable to communicate with the simpleRPL daemon: %s" % err)
         sys.exit(-1)
-    print(cli_sock.recv())
+    print(cli_sock.recv_string())
