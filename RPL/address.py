@@ -60,7 +60,7 @@ class Address(object):
         self.preflen = preflen
 
     def __str__(self):
-        return self.address
+        return self.address.decode("latin-1")
 
     def __repr__(self):
         return socket.inet_ntop(AF_INET6, self.address)
@@ -117,4 +117,4 @@ def derive_address(interface, prefix):
 
     # combine with the IID
     # return as an Address object
-    return Address(prefix + iid)
+    return Address(prefix + iid.encode("latin-1"))

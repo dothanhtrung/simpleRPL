@@ -88,6 +88,15 @@ class Lollipop(object):
             # try to minimize the changes to the node's state
             return 0
 
+    def __eq__(self, other):
+        return self.__cmp__(other) == 0
+
+    def __lt__(self, other):
+        return self.__cmp__(other) < 0
+
+    def __gt__(self, other):
+        return self.__cmp__(other) > 0
+
     def set_val(self, val):
         self.val = val
 

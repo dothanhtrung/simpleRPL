@@ -41,7 +41,7 @@ class AddressCache(object):
     def add(self, address, interface, pref_len=64, valid_lft=None, preferred_lft=None):
         """Add an address to an interface"""
         if (address, pref_len, interface) not in self.__address_cache:
-            self.__address_obj.add(address + "/" + str(pref_len), interface, str(valid_lft), str(preferred_lft))
+            self.__address_obj.add((address + "/" + str(pref_len)).encode("latin-1"), interface.encode("latin-1"), str(valid_lft).encode("latin-1"), str(preferred_lft).encode("latin-1"))
             self.__address_cache.append((address, pref_len, interface))
         else:
             self.__address_obj.add(address + "/" + str(pref_len), interface, str(valid_lft), str(preferred_lft), replace=True)

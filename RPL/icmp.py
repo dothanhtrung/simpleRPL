@@ -372,7 +372,8 @@ class DAO(ICMPv6):
         # there is a need to override the default string convertion
         # this is because the DODAGID field is optional
         if not self.D:  # the DODADID must not be present
-            return struct.pack(self._format[:-1], * self._header.values()[:-1])
+            headers = list(self._header.values())
+            return struct.pack(self._format[:-1], * headers[:-1])
         else:
             return super(DAO, self).__str__()
 
