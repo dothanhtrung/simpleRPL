@@ -45,7 +45,7 @@ class RouteCache(object):
 
         logger.debug("Remove route to %s through %s on iface %s" % (target, nexthop, nexthop_iface))
 
-        self.routing_obj.remove(target, (nexthop, nexthop_iface), table="local")
+        self.routing_obj.remove(target, (nexthop.decode("latin-1"), nexthop_iface.decode("latin-1")), table="local")
         self.route_cache.remove(route)
         return True
 
