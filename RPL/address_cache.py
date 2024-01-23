@@ -44,11 +44,11 @@ class AddressCache(object):
             self.__address_obj.add((address + "/" + str(pref_len)).encode("latin-1"), interface.encode("latin-1"), str(valid_lft).encode("latin-1"), str(preferred_lft).encode("latin-1"))
             self.__address_cache.append((address, pref_len, interface))
         else:
-            self.__address_obj.add(address + "/" + str(pref_len), interface, str(valid_lft), str(preferred_lft), replace=True)
+            self.__address_obj.add((address + "/" + str(pref_len)).encode("latin-1"), interface.encode("latin-1"), str(valid_lft).encode("latin-1"), str(preferred_lft).encode("latin-1"), replace=True)
 
     def emptyCache(self):
         for (addr, pref_len, iface) in self.__address_cache:
-            self.__address_obj.remove(addr + "/" + str(pref_len), iface)
+            self.__address_obj.remove((addr + "/" + str(pref_len)).encode("latin-1"), iface.encode("latin-1"))
 
     def __iter__(self):
         return iter(self.__address_cache)

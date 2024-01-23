@@ -177,6 +177,8 @@ class DODAG(object):
                       extra_option.encode("latin-1")
 
         if iface and destination:
+            if isinstance(iface, bytes):
+                iface = iface.decode("latin-1")
             self.interfaces[iface].send(destination, DIO_message)
         else:
             broadcast(self.interfaces, DIO_message)
@@ -270,12 +272,14 @@ class DODAG(object):
             return
 
         if nopath:
-            DAO_message = DAO_header + targets_opt + no_path_targets_opt + transit_inf_opt
+            DAO_message = DAO_header + targets_opt + no_path_targets_opt + str(transit_inf_opt)
         else:
-            DAO_message = DAO_header + targets_opt + transit_inf_opt + no_path_targets_opt + no_path_transit_inf_opt
+            DAO_message = DAO_header + targets_opt + str(transit_inf_opt) + no_path_targets_opt + no_path_transit_inf_opt
 
         if iface and destination:
-            self.interfaces[iface].send(destination, DAO_message)
+            if isinstance(iface, bytes):
+                iface = iface.decode("latin-1")
+            self.interfaces[iface].send(destination, DAO_message.encode("latin-1"))
         else:
             broadcast(self.interfaces, DAO_message)
 
@@ -304,8 +308,9 @@ class DODAG(object):
                                           Status = 0  # unqualified acceptance
                                           ))
 
-
-        self.interfaces[iface].send(destination, DAO_ACK_message)
+        if isinstance(iface, bytes):
+            iface = iface.decode("latin-1")
+        self.interfaces[iface].send(destination, DAO_ACK_message.encode("latin-1"))
 
 
     def setDIOtimer(self):

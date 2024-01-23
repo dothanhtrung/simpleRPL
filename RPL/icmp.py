@@ -19,6 +19,7 @@
 
 """This file contains the ICMP headers for all the RPL message"""
 import struct
+import re
 try:
     from collections import OrderedDict
 except ImportError:  # your python version might be too old already
@@ -52,7 +53,6 @@ RPL_OPT_Solicited_Information = 0x07
 RPL_OPT_Prefix_Information = 0x08
 RPL_OPT_Target_Descriptor = 0x09
 
-
 class Header(object):
     """A Generic Packet Header"""
     _fields = None
@@ -74,7 +74,7 @@ class Header(object):
 
     def __str__(self):
         self.build_compound_fields()
-        return struct.pack(self._format, * self._header.values())
+        return struct.pack(self._format, * self._header.values()).decode("latin-1")
 
     def pack(self):
         self.build_compound_fields()
@@ -373,7 +373,7 @@ class DAO(ICMPv6):
         # this is because the DODAGID field is optional
         if not self.D:  # the DODADID must not be present
             headers = list(self._header.values())
-            return struct.pack(self._format[:-1], * headers[:-1])
+            return struct.pack(re.sub('\d+s$', '', self._format), * headers[:-1]).decode("latin-1")
         else:
             return super(DAO, self).__str__()
 
@@ -383,7 +383,7 @@ class DAO(ICMPv6):
         if len(string) < self._header_size - 16:  # that is, if the DODAGID is not present
             raise Exception("string argument is to short to be parsed")
 
-        unamed_fields = struct.unpack(self._format[:-1], string[:self._header_size - 16])
+        unamed_fields = struct.unpack(re.sub('\d+s$', '', self._format), string[:self._header_size - 16])
         if len(unamed_fields) != len(self._fields) - 1:
             raise Exception("unpacked field data does not match, check your header definition")
 
@@ -465,7 +465,8 @@ class DAO_ACK(ICMPv6):
         # there is a need to override the default string convertion
         # this is because the DODAGID field is optional
         if not self.D:  # the DODADID must not be present
-            return struct.pack(self._format[:-1], * self._header.values()[:-1])
+            headers = list(self._header.values())
+            return struct.pack(re.sub('\d+s$', '', self._format), * headers[:-1]).decode("latin-1")
         else:
             return super(DAO_ACK, self).__str__()
 
@@ -475,7 +476,7 @@ class DAO_ACK(ICMPv6):
         if len(string) < self._header_size - 16:  # that is, if the DODAGID is not present
             raise Exception("string argument is to short to be parsed")
 
-        unamed_fields = struct.unpack(self._format[:-1], string[:self._header_size - 16])
+        unamed_fields = struct.unpack(re.sub('\d+s$', '', self._format), string[:self._header_size - 16])
         if len(unamed_fields) != len(self._fields) - 1:
             raise Exception("unpacked field data does not match, check your header definition")
 
@@ -822,6 +823,9 @@ class RPL_Option_RPL_Target(RPL_Option):
 
         self._header['flags'] = flags
         self._header['prefix_len'] = prefix_len
+
+        if isinstance(target_prefix, str):
+            target_prefix = target_prefix.encode("latin-1")
         self._header['target_prefix'] = target_prefix
 
         self.length = len(target_prefix) + 2
@@ -898,7 +902,10 @@ class RPL_Option_Transit_Information(RPL_Option):
     def __str__(self):
         self.build_compound_fields()
         self.length = len(self.parent_address) + 4
-        return super(RPL_Option_Transit_Information, self).__str__() + self.parent_address
+        parent_address = self.parent_address
+        if isinstance(parent_address, bytes):
+            parent_address = parent_address.decode("latin-1")
+        return super(RPL_Option_Transit_Information, self).__str__() + parent_address
 
     def parse(self, string):
         payload = super(RPL_Option_Transit_Information, self).parse(string)
