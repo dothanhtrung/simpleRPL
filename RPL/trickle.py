@@ -132,4 +132,4 @@ class trickleTimer(object):
 
     def __del__(self):
         self.cancel()
-        super(trickleTimer, self).__del__()
+        # super(trickleTimer, self).__del__()
